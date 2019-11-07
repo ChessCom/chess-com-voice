@@ -18,12 +18,19 @@ if (fileSystem.existsSync(secretsPath)) {
   alias["secrets"] = secretsPath;
 }
 
+//const SRC = path.resolve(__dirname, 'node_modules');
+const SRC = path.join(__dirname, "src", "sounds", "default", "squares");
+
 var options = {
   mode: process.env.NODE_ENV || "development",
   entry: {
     popup: path.join(__dirname, "src", "js", "popup.js"),
     options: path.join(__dirname, "src", "js", "options.js"),
-    background: path.join(__dirname, "src", "js", "background.js")
+    background: path.join(__dirname, "src", "js", "background.js"),
+    contentScript: path.join(__dirname, "src", "js", "content-script.js")
+  },
+  chromeExtensionBoilerplate: {
+    notHotReload: ["contentScript"]
   },
   output: {
     path: path.join(__dirname, "build"),
@@ -45,7 +52,12 @@ var options = {
         test: /\.html$/,
         loader: "html-loader",
         exclude: /node_modules/
-      }
+      },
+      {
+          test: /\.mp3$/,
+          include: SRC,
+          loader: 'file-loader'
+      },
     ]
   },
   resolve: {

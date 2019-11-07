@@ -1,11 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-</head>
-<body>
-  <h1>Hello!</h1>
-  <img src="img/icon-128.png">
-</body>
+<html>
+  <head>
+    <style>
+    </style>
+    <script src="js/jquery-3.3.1.min.js"></script>
+  </head>
+  <body>
+    <div>
+      <h4>Voice:</h4>
+      <div>
+        <input type="radio" id="voice-default" name="voice" value="default">
+        <label for="voice-default">Default</label>
+      </div>
+
+      <div>
+        <input type="radio" id="voice-danny" name="voice" value="danny">
+        <label for="voice-danny">Danny</label>
+      </div>
+    </div>
+    <div>
+      <h4>Audio settings:</h4>
+      <div>
+        <label for="volume">Volume</label>
+        <input type="range" id="volume" name="volume" min="0" max="100" step="10">
+      </div>
+      <div>
+        <input type="checkbox" id="mute" name="mute" checked="false" />
+        <label for="mute">Mute</label>
+      </div>
+    </div>
+
+    <script type="module" src="js/popup.js"></script>
+  </body>
 </html>
