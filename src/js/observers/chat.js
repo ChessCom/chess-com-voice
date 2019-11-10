@@ -41,9 +41,10 @@ const chatGameMessageToEvent = (elem) => {
         drawnBy,
       };
     }
-    const winnerUsername = elem.querySelector('.username').getAttribute('data-username');
-    const reasons = ['game abandoned', 'on time', 'by checkmate'];
-    const text = elem.textContent.trim().toLowerCase();
+    const usernameElem = elem.querySelector('.username');
+    const winnerUsername = usernameElem.getAttribute('data-username');
+    const reasons = ['game abandoned', 'on time', 'by checkmate', 'by resignation'];
+    const text = usernameElem.nextElementSibling.textContent.trim().toLowerCase();
     let wonBy = undefined;
     for (const reason of reasons) {
       if (text.includes(reason)) {

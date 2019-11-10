@@ -1,36 +1,60 @@
 'use strict';
 
+
+class AudioSequence {
+  constructor(paths) {
+    this.audios = paths.map(path => new Audio(chrome.extension.getURL(path)));
+    for (let i = 0; i+1 < this.audios.length; ++i) {
+      this.audios[i].addEventListener('ended', () => {
+        this.audios[i+1].play();
+      }, { once: true });
+      //TODO: Log error here?
+      this.audios[i].addEventListener('error', (e) => {
+        if (e !== null) {
+          this.audios[i+1].play();
+        }
+      }, { once: true });
+    }
+  }
+
+  play() {
+    this.audios[0].play();
+  }
+
+  addEventListener(type, listener) {
+    if (type === 'ended') {
+      this.audios[this.audios.length-1].addEventListener('ended', listener, { once: true });
+    }
+  }
+};
+
 class Player {
   constructor() {
+    this.audios = [];
   }
-  play(paths) {
-    let audios = [];
-    for (const path of paths) {
-      const audio = new Audio(path);
-      if (audios.length) {
-        const prev = audios.length[audios.length-1];
-        prev.addEventListener('ended', () => {
-          audio.play();
-        });
-      }
+
+  enqueue(audio) {
+    this.audios.push(audio);
+    if (this.audios.length === 1) {
+      this.deque();
     }
-    audios[0].play();
   }
-}
 
-export { Player };
+  deque() {
+    if (!this.audios.length) {
+      return;
+    }
+    const head = this.audios[0];
+    head.addEventListener('ended', () => {
+      this.audios.shift();
+      while (this.audios.length >= 2) {
+        this.audios.shift();
+      }
+      this.deque();
+    }, { once: true });
 
-//   const path = chrome.extension.getURL(`sounds/${sound}.ogg`);
-//   const audio = new Audio(path);
-//   chrome.storage.sync.get(['volume', 'mute'], ({ volume, mute }) => {
-//     if (!mute) {
-//       audio.volume = volume / 100;
-//       audio.play();
-//     }
-//   });
-// }
-//
-// const playMoveSound = (san) => {
-//   playSound(san+'_1');
-// }
-//
+    head.play();
+  }
+};
+
+export { AudioSequence, Player };

@@ -23,7 +23,7 @@
       "js": ["contentScript.bundle.js"]
     }
   ],
-  "web_accessible_resources": ["src/sounds/*"],
+  "web_accessible_resources": ["sounds/*"],
   "manifest_version": 2,
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 
