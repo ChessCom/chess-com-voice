@@ -1,9 +1,16 @@
+
 'use strict';
 
+const makeAudioPath = ({ basePath, identifierPath, extension }) => {
+  return `${basePath}${identifierPath}.${extension}`;
+}
 
 class AudioSequence {
-  constructor(paths) {
+  constructor(paths, volume) {
     this.audios = paths.map(path => new Audio(chrome.extension.getURL(path)));
+    for (let audio of this.audios) {
+      audio.volume = volume;
+    }
     for (let i = 0; i+1 < this.audios.length; ++i) {
       this.audios[i].addEventListener('ended', () => {
         this.audios[i+1].play();
@@ -28,7 +35,7 @@ class AudioSequence {
   }
 };
 
-class Player {
+class PlayQueue {
   constructor() {
     this.audios = [];
   }
@@ -55,6 +62,14 @@ class Player {
 
     head.play();
   }
+
+  clear() {
+    this.audios = [];
+  }
 };
 
-export { AudioSequence, Player };
+export {
+  makeAudioPath,
+  AudioSequence,
+  PlayQueue,
+};
