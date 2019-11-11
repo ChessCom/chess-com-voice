@@ -7,31 +7,34 @@ const makeAudioPath = ({ basePath, identifierPath, extension }) => {
 
 class AudioSequence {
   constructor(paths, volume) {
-    this.audios = paths.map(path => new Audio(chrome.extension.getURL(path)));
-    for (let audio of this.audios) {
-      audio.volume = volume;
-    }
-    for (let i = 0; i+1 < this.audios.length; ++i) {
-      this.audios[i].addEventListener('ended', () => {
-        this.audios[i+1].play();
-      }, { once: true });
-      //TODO: Log error here?
-      this.audios[i].addEventListener('error', (e) => {
-        if (e !== null) {
-          this.audios[i+1].play();
-        }
-      }, { once: true });
-    }
+    this.paths = paths;
+    this.volume = volume;
+    this.listeners = {};
   }
 
+  _playNext() {
+    if (!this.paths.length) {
+      if (this.listeners['ended'] && typeof this.listeners['ended'] === 'function') {
+        this.listeners['ended']();
+      }
+    } else {
+      const audio = new Audio();
+      audio.addEventListener('canplaythrough', () => {
+        audio.addEventListener('ended', () => { this._playNext(); });
+        audio.volume = this.volume;
+        audio.play();
+      });
+      audio.addEventListener('error', () => { this._playNext(); });
+      const path = this.paths.shift();
+      audio.src = chrome.extension.getURL(path);
+    }
+  }
   play() {
-    this.audios[0].play();
+    this._playNext();
   }
 
   addEventListener(type, listener) {
-    if (type === 'ended') {
-      this.audios[this.audios.length-1].addEventListener('ended', listener, { once: true });
-    }
+    this.listeners[type] = listener;
   }
 };
 
@@ -58,7 +61,7 @@ class PlayQueue {
         this.audios.shift();
       }
       this.deque();
-    }, { once: true });
+    });
 
     head.play();
   }

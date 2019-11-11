@@ -44,16 +44,16 @@ class GamesObserver {
                 observer.stop();
               }
 
-              const chatStreamElem = document.querySelector('.chat-stream-component');
-              const movesListElem = document.querySelector('.vertical-move-list-component').querySelector('div');
-              const openingNameElem = document.querySelector('.board-opening-name');
-
-              const gameStateEvents = Array.from(chatStreamElem.querySelectorAll('.chat-message-component'))
-              .filter(msg => isChatGameMessage(msg, this.gameId))
-              .map(msg => chatGameMessageToEvent(msg))
-              .filter(e => e);
-
               const initAndStartObserving = () => {
+                const chatStreamElem = document.querySelector('.chat-stream-component');
+                const movesListElem = document.querySelector('.vertical-move-list-component').querySelector('div');
+                const openingNameElem = document.querySelector('.board-opening-name');
+
+                const gameStateEvents = Array.from(chatStreamElem.querySelectorAll('.chat-message-component'))
+                .filter(msg => isChatGameMessage(msg, this.gameId))
+                .map(msg => chatGameMessageToEvent(msg))
+                .filter(e => e);
+
                 const moveEvents = Array.from(movesListElem.querySelectorAll('.move-text-component'))
                 .map(e => moveElementToEvent(e));
 

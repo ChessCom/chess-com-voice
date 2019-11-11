@@ -49,6 +49,9 @@ class GamesManager {
       this.initializeGame(gameId, params);
     } else {
       const game = this.games[gameId];
+      if (!game) {
+        return;
+      }
       if (type === 'ended' && !game.ended) {
         game.end();
         const winnerColor = game.colorOfUsername(params.winnerUsername);

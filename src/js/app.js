@@ -10,6 +10,7 @@ import { makeAudioPath, AudioSequence, PlayQueue } from './audio/utils';
 
 const app = () => {
 
+  // TODO: set volume from user settings and act appropriately when user changes volume
   const voice = new DefaultVoice(0.6);
 
   let chatElem = document.querySelector('.sidebar-tabsetBottom');
