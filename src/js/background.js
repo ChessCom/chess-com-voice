@@ -11,6 +11,12 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log('LOG: ' + request.message);
+    if (request.type === 'log') {
+      console.log('LOG: ' + request.message);
+    } else if (request.type === 'settingsChanged') {
+      console.log('SETTINGS CHANGED');
+      chrome.runtime.sendMessage({ type: 'callback' });
+      console.log('message sent');
+    }
   }
 );

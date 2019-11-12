@@ -76,12 +76,27 @@ const getMoveAudioIds = (san) => {
 }
 
 class DefaultVoice {
-  constructor(volume) {
+  constructor({ volume, mute }) {
     this.volume = volume;
+    this.mute = mute;
     this.q = new PlayQueue();
   }
 
+  setMute(value) {
+    this.mute = value;
+    if (this.mute) {
+      this.q.clear();
+    }
+  }
+
+  setVolume(value) {
+    this.volume = value;
+  }
+
   _playIds(ids) {
+    if (this.mute) {
+      return;
+    }
     const audios = ids.map(id => makeAudioPath({ basePath, identifierPath: id, extension }));
     const seq = new AudioSequence(audios, this.volume);
     this.q.enqueue(seq);

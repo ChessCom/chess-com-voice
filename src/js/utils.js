@@ -1,9 +1,8 @@
 'use strict';
 
 const LOG = (msg) => {
-  chrome.runtime.sendMessage({ message: msg }, function(response) {
-  });
-}
+  chrome.runtime.sendMessage({ type: 'log', message: msg });
+};
 
 const pieceCodeToName = {
   'K': 'king',
