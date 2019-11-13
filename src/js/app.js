@@ -24,7 +24,7 @@ const init = () => {
         voiceObj.draw({ reason: params.drawnBy });
       } else {
         LOG(`game ended, winnerColor=${params.winnerColor}, winnerUsername=${params.winnerUsername} wonBy=${params.wonBy}`);
-        voiceObj.win(({ winnerColor: params.winnerColor, reason: params.wonBy.split(' ')[1] }));
+        voiceObj.win(({ winnerColor: params.winnerColor, reason: params.wonBy }));
       }
     });
 

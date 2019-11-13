@@ -3,23 +3,23 @@
 import { AudioSequence, PlayQueue, makeAudioPath } from '../utils';
 import { matchSan, pieceCodeToName } from '../../utils';
 
-const basePath = 'sounds/default/';
+const basePath = 'sounds/default/mp3/';
 const extension = 'mp3';
 
 const getDrawAudioIds = ({ reason }) => {
   return [
-    'game/draw',
-    'game/by',
-    `game/${reason}`,
+    'game_result/draw',
+    'misc/by',
+    `game_drew_reason/${reason}`,
   ];
 }
 
 const getWinAudioIds = ({ winnerColor, reason }) => {
   return [
-    `game/${winnerColor}`,
-    'game/wins',
-    'game/by',
-    `game/${reason}`,
+    `color/${winnerColor}`,
+    'game_result/wins',
+    reason === 'time' ? 'misc/on' : 'misc/by',
+    `game_won_reason/${reason}`,
   ];
 }
 
@@ -27,9 +27,10 @@ const getMoveAudioIds = (san) => {
   const match = matchSan(san);
 
   let seq = [];
+
   // castle, either short or long
   if (match[1]) {
-    seq.push(`action/${match[1]}`);
+    seq.push(`full_move/${match[1]}`);
   }
 
   // piece
@@ -40,16 +41,14 @@ const getMoveAudioIds = (san) => {
   if (match[3] && match[4]) {
     seq.push(`square/${match[3]}${match[4]}`);
   } else if (match[3]) {
-  //TODO: sounds not existing yet
     seq.push(`file/${match[3]}`);
   } else if (match[4]) {
-  //TODO: sounds not existing yet
     seq.push(`rank/${match[4]}`);
   }
 
   // takes
   if (match[5]) {
-    seq.push('action/takes');
+    seq.push('move_modifier/takes');
   }
 
   // full destination square, mandatory except castling moves
@@ -57,20 +56,22 @@ const getMoveAudioIds = (san) => {
     seq.push(`square/${match[6]}${match[7]}`);
   }
 
-  //TODO: sounds not existing yet
   // promotion to piece
   if (match[8]) {
-    seq.push(`promotion/pieceCodeToName[${match[8]}]`);
+    const pieceCode = match[8].substring(1);
+    const pieceName = pieceCodeToName[pieceCode];
+    seq.push('move_modifier/equals');
+    seq.push(`piece/${pieceName}`);
   }
 
   // check
   if (match[9]) {
-    seq.push('action/check');
+    seq.push('move_modifier/check');
   }
 
   // mate
   if (match[10]) {
-    seq.push('action/mate');
+    seq.push('move_modifier/mate');
   }
   return seq;
 }
