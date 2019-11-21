@@ -3,8 +3,8 @@
 import { AudioSequence, PlayQueue, makeAudioPath } from '../utils';
 import { matchSan, pieceCodeToName, LOG } from '../../utils';
 
-const basePath = 'sounds/danny/wav/parts/';
-const extension = 'wav';
+const defaultBasePath = 'sounds/danny/wav/parts/';
+const defaultExtension = 'wav';
 
 const getMoveAudioIds = (san) => {
   // finds the shortest set of audios covering the whole san
@@ -51,13 +51,13 @@ class DannyVoice {
     this.volume = value;
   }
 
-  _playIds(ids) {
+  _playIds(ids, basePath = defaultBasePath, extension = defaultExtension, priority = 5) {
     if (this.mute) {
       return;
     }
     const audios = ids.map(id => makeAudioPath({ basePath, identifierPath: id, extension }));
     const seq = new AudioSequence(audios, this.volume);
-    this.q.enqueue(seq);
+    this.q.enqueue(seq, priority);
   }
 
   move({ san }) {

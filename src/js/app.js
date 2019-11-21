@@ -11,8 +11,8 @@ import { makeAudioPath, AudioSequence, PlayQueue } from './audio/utils';
 
 let voiceObj = null;
 
-const pingFrequency = 5000; // in milliseconds
-const idleTimeout = 5000; // in milliseconds
+const pingFrequency = 1000; // in milliseconds
+const idleTimeout = 3000; // in milliseconds
 
 const init = () => {
   let chatElem = document.querySelector('.sidebar-tabsetBottom');
