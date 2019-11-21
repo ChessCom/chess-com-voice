@@ -40,6 +40,11 @@ const init = () => {
       LOG(`We have opening ${name}`);
     });
 
+    manager.addListener('time', ({ playerColor, seconds }) => {
+      LOG(`${playerColor} clock is ${seconds}s`);
+      // TODO: play some sounds
+    });
+
     manager.addListener('idle', ({ idleTime, playerColor }) => {
       LOG(`${playerColor} is idle for ${idleTime/1000}s`);
       voiceObj.idle({ idleTime, playerColor });

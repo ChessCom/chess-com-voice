@@ -14,6 +14,7 @@ class GamesManager {
       'opening': [],
       'end': [],
       'idle': [],
+      'time': [],
     };
     this.idleTimeout = idleTimeout;
   }
@@ -65,6 +66,8 @@ class GamesManager {
             playerColor: game.currentPlayerColor(),
           }));
         }
+      } else if (type === 'time') {
+        this.listeners['time'].forEach(l => l({ gameId, ...params }));
       } else {
         if (type === 'ended' && !game.ended) {
           game.end();

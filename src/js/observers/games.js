@@ -4,6 +4,7 @@ import { LOG } from '../utils';
 import { ChatObserver, isChatGameMessage, chatGameMessageToEvent } from './chat';
 import { MovesObserver, moveElementToEvent } from './moves';
 import { OpeningObserver, openingElementToName } from './opening';
+import { TimeObserver } from './time';
 import { PingObserver } from './ping';
 
 class GamesObserver {
@@ -51,6 +52,9 @@ class GamesObserver {
                 const movesListElem = document.querySelector('.vertical-move-list-component').querySelector('div');
                 const openingNameElem = document.querySelector('.board-opening-name');
 
+                const whiteTimeElem = document.querySelector('.clock-white');
+                const blackTimeElem = document.querySelector('.clock-black');
+
                 const gameStateEvents = Array.from(chatStreamElem.querySelectorAll('.chat-message-component'))
                 .filter(msg => isChatGameMessage(msg, this.gameId))
                 .map(msg => chatGameMessageToEvent(msg))
@@ -69,9 +73,13 @@ class GamesObserver {
                 const chatObserver = new ChatObserver(chatStreamElem, this.gameId, this);
                 const movesObserver = new MovesObserver(movesListElem, this);
                 const openingObserver = new OpeningObserver(openingNameElem, this);
+
+                const whiteTimeObserver = new TimeObserver(whiteTimeElem, this.gameId, 'white', this);
+                const blackTimeObserver = new TimeObserver(blackTimeElem, this.gameId, 'black', this);
+
                 const pingObserver = new PingObserver(this.pingFrequency, this.gameId, this);
 
-                this.childObservers = [chatObserver, movesObserver, openingObserver, pingObserver];
+                this.childObservers = [chatObserver, movesObserver, openingObserver, whiteTimeObserver, blackTimeObserver, pingObserver];
                 this.childObservers.forEach(o => o.start());
               }
               // we set timeout so that initial moves list and opening name have time to load
