@@ -64,7 +64,7 @@ const chatGameMessageToEvent = (elem) => {
 
 class ChatObserver {
 
-  constructor(target, parent, gameId) {
+  constructor(target, gameId, parent) {
     this.elem = target;
     this.parent = parent;
     this.gameId = gameId;

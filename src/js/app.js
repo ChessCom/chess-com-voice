@@ -11,10 +11,13 @@ import { makeAudioPath, AudioSequence, PlayQueue } from './audio/utils';
 
 let voiceObj = null;
 
+const pingFrequency = 5000; // in milliseconds
+const idleTimeout = 5000; // in milliseconds
+
 const init = () => {
   let chatElem = document.querySelector('.sidebar-tabsetBottom');
   if (chatElem !== null) {
-    const manager = new GamesManager();
+    const manager = new GamesManager(idleTimeout);
     manager.addListener('start', ({ gameId, whiteUsername, blackUsername }) => {
       LOG(`new game started, gameId=${gameId} whiteUsername=${whiteUsername} blackUsername=${blackUsername}`);
     });
@@ -37,7 +40,12 @@ const init = () => {
       LOG(`We have opening ${name}`);
     });
 
-    const gamesObserver = new GamesObserver(chatElem);
+    manager.addListener('idle', ({ idleTime, playerColor }) => {
+      LOG(`${playerColor} is idle for ${idleTime/1000}s`);
+      voiceObj.idle({ idleTime, playerColor });
+    });
+
+    const gamesObserver = new GamesObserver(chatElem, pingFrequency);
     gamesObserver.addHandler(manager);
     gamesObserver.start();
   }

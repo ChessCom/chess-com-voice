@@ -4,13 +4,15 @@ import { LOG } from '../utils';
 import { ChatObserver, isChatGameMessage, chatGameMessageToEvent } from './chat';
 import { MovesObserver, moveElementToEvent } from './moves';
 import { OpeningObserver, openingElementToName } from './opening';
+import { PingObserver } from './ping';
 
 class GamesObserver {
-  constructor(chatElem) {
+  constructor(chatElem, pingFrequency) {
     this.handlers = [];
     this.observer = null;
     this.gameId = null;
     this.childObservers = [];
+    this.pingFrequency = pingFrequency;
   }
 
   addHandler(handler) {
@@ -64,11 +66,12 @@ class GamesObserver {
                   openingName: openingElementToName(openingNameElem),
                 });
 
-                const chatObserver = new ChatObserver(chatStreamElem, this, this.gameId);
+                const chatObserver = new ChatObserver(chatStreamElem, this.gameId, this);
                 const movesObserver = new MovesObserver(movesListElem, this);
                 const openingObserver = new OpeningObserver(openingNameElem, this);
+                const pingObserver = new PingObserver(this.pingFrequency, this.gameId, this);
 
-                this.childObservers = [chatObserver, movesObserver, openingObserver];
+                this.childObservers = [chatObserver, movesObserver, openingObserver, pingObserver];
                 this.childObservers.forEach(o => o.start());
               }
               // we set timeout so that initial moves list and opening name have time to load

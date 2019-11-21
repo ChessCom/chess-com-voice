@@ -4,15 +4,18 @@ import { Game } from './game';
 import { LOG } from '../utils';
 
 class GamesManager {
-  constructor() {
+  constructor(idleTimeout) {
     this.games = {};
     this.seenOpenings = {};
+    this.updateTimestamp = {};
     this.listeners = {
       'start': [],
       'move': [],
       'opening': [],
       'end': [],
-    }
+      'idle': [],
+    };
+    this.idleTimeout = idleTimeout;
   }
 
   addListener(type, listener) {
@@ -28,6 +31,7 @@ class GamesManager {
       if (type === 'started') {
         this.games[gameId] = new Game(gameId, params.whiteUsername, params.blackUsername);
         this.seenOpenings[gameId] = openingName ? [openingName] : [];
+        this.updateTimestamp[gameId] = Date.now();
         game = this.games[gameId];
         moveEvents.forEach(e => game.pushMove(e.san));
       } else if (type === 'ended') {
@@ -52,26 +56,38 @@ class GamesManager {
       if (!game) {
         return;
       }
-      if (type === 'ended' && !game.ended) {
-        game.end();
-        const winnerColor = game.colorOfUsername(params.winnerUsername);
-        this.listeners['end'].forEach(l => l({ gameId, winnerColor, ...params }));
-      } else if (type === 'move' && !game.ended) {
-        this.listeners['move'].forEach(l => l({
-          gameId,
-          playerColor: game.currentPlayerColor(),
-          playerUsername: game.currentPlayerUsername(),
-          ...params
-        }));
-        game.pushMove(params.san);
-      } else if (type === 'openingName') {
-        const { name } = params;
-        const seenOpenings = this.seenOpenings[gameId];
-        if (seenOpenings.includes(name)) {
-          return;
+      const now = Date.now();
+      if (type === 'ping' && !game.ended) {
+        const idleTime = now - this.updateTimestamp[gameId];
+        if (idleTime > this.idleTimeout) {
+          this.listeners['idle'].forEach(l => l({
+            idleTime,
+            playerColor: game.currentPlayerColor(),
+          }));
         }
-        seenOpenings.push(name);
-        this.listeners['opening'].forEach(l => l({ gameId, ...params }));
+      } else {
+        if (type === 'ended' && !game.ended) {
+          game.end();
+          const winnerColor = game.colorOfUsername(params.winnerUsername);
+          this.listeners['end'].forEach(l => l({ gameId, winnerColor, ...params }));
+        } else if (type === 'move' && !game.ended) {
+          this.listeners['move'].forEach(l => l({
+            gameId,
+            playerColor: game.currentPlayerColor(),
+            playerUsername: game.currentPlayerUsername(),
+            ...params
+          }));
+          game.pushMove(params.san);
+        } else if (type === 'openingName') {
+          const { name } = params;
+          const seenOpenings = this.seenOpenings[gameId];
+          if (seenOpenings.includes(name)) {
+            return;
+          }
+          seenOpenings.push(name);
+          this.listeners['opening'].forEach(l => l({ gameId, ...params }));
+        }
+        this.updateTimestamp[gameId] = now;
       }
     }
   }

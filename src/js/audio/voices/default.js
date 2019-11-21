@@ -117,6 +117,10 @@ class DefaultVoice {
     const ids = getDrawAudioIds({ reason });
     this._playIds(ids);
   }
+
+  idle({ idleTime, playerColor }) {
+    //TODO: maybe implement something?
+  }
 };
 
 export {
