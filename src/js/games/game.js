@@ -47,7 +47,6 @@ class Game {
     return now - this._updateTimestamp;
   }
 
-
   colorOfUsername(username) {
     if (username === this._whiteUsername) {
       return 'white';

@@ -1,6 +1,7 @@
 'use strict';
 
 import { LOG } from '../utils';
+import { AbstractDOMObserver } from './abstract';
 
 const moveElementToEvent = (e) => {
   return {
@@ -9,39 +10,24 @@ const moveElementToEvent = (e) => {
   };
 }
 
-class MovesObserver {
-
-  constructor(target, parent) {
-    this.elem = target;
-    this.parent = parent;
-    this.observer = null;
-    return this;
-  }
-
-  notifyHandlers(event) {
-    this.parent && this.parent.notifyHandlers(event);
-  }
-
-  stop() {
-    this.observer && this.observer.disconnect();
-  }
+class MovesObserver extends AbstractDOMObserver {
 
   start() {
     LOG('moves observing started...');
-    this.observer = new MutationObserver((mutations, obj) => {
+    this._observer = new MutationObserver((mutations, obj) => {
       for (let mutation of mutations) {
         if (mutation.type === 'childList') {
           for (let i = 0; i < mutation.addedNodes.length; ++i) {
             const node = mutation.addedNodes.item(i);
             const moveNodes = node.querySelectorAll('.move-text-component');
             for (const moveNode of moveNodes) {
-              this.notifyHandlers(moveElementToEvent(moveNode));
+              this._notifyHandlers(moveElementToEvent(moveNode));
             }
           }
         }
       }
     })
-    .observe(this.elem, {
+    .observe(this._target, {
       attributes: false,
       childList: true,
       subtree: true,

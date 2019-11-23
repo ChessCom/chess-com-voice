@@ -1,6 +1,7 @@
 'use strict';
 
 import { LOG } from '../utils';
+import { AbstractDOMObserver } from './abstract';
 
 const isChatGameMessage = (e, gameId) => {
   return e.classList && e.classList.contains('chat-message-component')
@@ -62,42 +63,31 @@ const chatGameMessageToEvent = (elem) => {
   return null;
 };
 
-class ChatObserver {
+class ChatObserver extends AbstractDOMObserver {
 
-  constructor(target, gameId, parent) {
-    this.elem = target;
-    this.parent = parent;
-    this.gameId = gameId;
-    this.observer = null;
-    return this;
-  }
-
-  notifyHandlers(event) {
-    this.parent && this.parent.notifyHandlers(event);
-  }
-
-  stop() {
-    this.observer && this.observer.disconnect();
+  constructor(target, gameId) {
+    super(target);
+    this._gameId = gameId;
   }
 
   start() {
     LOG('message observing started...');
-    this.observer = new MutationObserver((mutations, obj) => {
+    this._observer = new MutationObserver((mutations, obj) => {
       for (let mutation of mutations) {
         if (mutation.type === 'childList') {
           for (let i = 0; i < mutation.addedNodes.length; ++i) {
             const node = mutation.addedNodes.item(i);
-            if (isChatGameMessage(node, this.gameId)) {
+            if (isChatGameMessage(node, this._gameId)) {
               const event = chatGameMessageToEvent(node);
               if (event) {
-                this.notifyHandlers(event);
+                this._notifyHandlers(event);
               }
             }
           }
         }
       }
     })
-    .observe(this.elem, {
+    .observe(this._target, {
       attributes: false,
       childList: true,
       subtree: true,

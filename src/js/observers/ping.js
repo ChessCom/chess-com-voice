@@ -1,33 +1,27 @@
 'use strict';
 
 import { LOG } from '../utils';
+import { AbstractObserver } from './abstract';
 
-class PingObserver {
+class PingObserver extends AbstractObserver {
 
-  constructor(frequency, gameId, parent) {
-    this.frequency = frequency;
-    this.gameId = gameId;
-    this.parent = parent;
-    this.interval = null;
+  constructor(frequency) {
+    super();
+    this._frequency = frequency;
+    this._interval = null;
     return this;
   }
 
-  notifyHandlers(event) {
-    this.parent && this.parent.notifyHandlers(event);
-  }
-
   stop() {
-    this.interval && clearInterval(this.interval);
+    super.stop();
+    this._interval && clearInterval(this._interval);
   }
 
   start() {
     LOG('starting ping observer');
-    this.interval = setInterval(() => {
-      this.notifyHandlers({
-        type: 'ping',
-        gameId: this.gameId,
-      });
-    }, this.frequency);
+    this._interval = setInterval(() => {
+      this._notifyHandlers({ type: 'ping' });
+    }, this._frequency);
   }
 }
 

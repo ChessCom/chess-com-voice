@@ -27,7 +27,7 @@ class GamesManager {
     this._listeners[type].forEach(l => l(message));
   }
 
-  _initializeGame(gameId, { gameStateEvents, moveEvents, openingName }) {
+  _initializeGame({ gameId, gameStateEvents, moveEvents, openingName }) {
     let game = null;
     for (const gameStateEvent of gameStateEvents) {
       const { type, ...params } = gameStateEvent;
@@ -52,9 +52,10 @@ class GamesManager {
     }
   }
 
-  handleEvent(gameId, { type, ...params }) {
+  handleEvent({ type, gameId, ...params }) {
+    LOG('got event=' + JSON.stringify({ type, gameId, ...params }));
     if (type === 'init') {
-      this._initializeGame(gameId, params);
+      this._initializeGame({ gameId, ...params });
     } else {
       const game = this._games[gameId];
       if (!game || game.ended) {
@@ -74,6 +75,7 @@ class GamesManager {
         if (type === 'ended') {
           game.end();
           const winnerColor = game.colorOfUsername(params.winnerUsername);
+          LOG(`winnerColor=${winnerColor}`);
           this._notifiListeners('end', { gameId, winnerColor, ...params });
         } else if (type === 'move') {
           this._notifiListeners('move', {

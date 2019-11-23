@@ -2,7 +2,7 @@
 
 import { LOG } from './utils';
 import { Settings } from './settings';
-import { GamesObserver } from './observers';
+import { LiveGameObserver } from './observers';
 import { GamesManager } from './games';
 
 import { VoiceFactory } from './audio';
@@ -50,9 +50,9 @@ const init = () => {
       voiceObj.idle({ idleTime, playerColor });
     });
 
-    const gamesObserver = new GamesObserver(chatElem, pingFrequency);
-    gamesObserver.addHandler(manager);
-    gamesObserver.start();
+    const liveGameObserver = new LiveGameObserver(document, pingFrequency);
+    liveGameObserver.addHandler((event) => { manager.handleEvent(event)});
+    liveGameObserver.start();
   }
 };
 

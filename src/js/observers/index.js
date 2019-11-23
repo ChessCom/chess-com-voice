@@ -1,5 +1,5 @@
 'use strict';
 
-import { GamesObserver } from './games';
+import { LiveGameObserver } from './games';
 
-export { GamesObserver };
+export { LiveGameObserver };

@@ -1,36 +1,22 @@
 'use strict';
 
 import { LOG } from '../utils';
+import { AbstractDOMObserver } from './abstract';
 
 const openingElementToName = e => e.textContent.trim();
 
-class OpeningObserver {
-
-  constructor(target, parent) {
-    this.elem = target;
-    this.parent = parent;
-    this.observer = null;
-    return this;
-  }
-
-  notifyHandlers(event) {
-    this.parent && this.parent.notifyHandlers(event);
-  }
-
-  stop() {
-    this.observer && this.observer.disconnect();
-  }
+class OpeningObserver extends AbstractDOMObserver {
 
   start() {
     LOG('starting opening name observer');
-    this.observer = new MutationObserver((mutations, obj) => {
-      const openingName = openingElementToName(this.elem);
-      this.notifyHandlers({
+    this._observer = new MutationObserver((mutations, obj) => {
+      const openingName = openingElementToName(this._target);
+      this._notifyHandlers({
         type: 'openingName',
         name: openingName,
       });
     })
-    .observe(this.elem, {
+    .observe(this._target, {
       attributes: false,
       childList: true,
       subtree: false,

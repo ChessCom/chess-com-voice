@@ -1,96 +1,83 @@
 'use strict';
 
 import { LOG } from '../utils';
+import { AbstractDOMObserver } from './abstract';
 import { ChatObserver, isChatGameMessage, chatGameMessageToEvent } from './chat';
 import { MovesObserver, moveElementToEvent } from './moves';
 import { OpeningObserver, openingElementToName } from './opening';
 import { TimeObserver } from './time';
 import { PingObserver } from './ping';
 
-class GamesObserver {
-  constructor(chatElem, pingFrequency) {
-    this.handlers = [];
-    this.observer = null;
-    this.gameId = null;
-    this.childObservers = [];
-    this.pingFrequency = pingFrequency;
+class LiveGameObserver extends AbstractDOMObserver {
+  constructor(target, pingFrequency) {
+    super(target);
+    this._pingFrequency = pingFrequency;
+    this._gameId = null;
   }
 
-  addHandler(handler) {
-    this.handlers.push(handler);
-    return this;
+  _prepareEvent(event) {
+    return { gameId: this._gameId, ...event };
   }
 
-  notifyHandlers(event) {
-    this.handlers.forEach(h => h.handleEvent(this.gameId, event));
-  }
+  initChildren() {
+    const chatStreamElem = this._target.querySelector('.chat-stream-component');
+    const movesListElem = this._target.querySelector('.vertical-move-list-component').querySelector('div');
+    const openingNameElem = this._target.querySelector('.board-opening-name');
+    const whiteTimeElem = this._target.querySelector('.clock-white');
+    const blackTimeElem = this._target.querySelector('.clock-black');
 
-  stop() {
-    if (this.observer) {
-      this.childObservers.forEach(o => o.stop());
-      this.observer.disconnect();
-    }
+    const gameStateEvents = Array.from(chatStreamElem.querySelectorAll('.chat-message-component'))
+    .filter(msg => isChatGameMessage(msg, this._gameId))
+    .map(msg => chatGameMessageToEvent(msg))
+    .filter(e => e);
+
+    const moveEvents = Array.from(movesListElem.querySelectorAll('.move-text-component'))
+    .map(e => moveElementToEvent(e));
+
+    this._notifyHandlers({
+      type: 'init',
+      gameStateEvents,
+      moveEvents,
+      openingName: openingElementToName(openingNameElem),
+    });
+
+    const children = [
+      new ChatObserver(chatStreamElem, this._gameId),
+      new MovesObserver(movesListElem),
+      new OpeningObserver(openingNameElem),
+      new TimeObserver(whiteTimeElem, 'white'),
+      new TimeObserver(blackTimeElem, 'black'),
+      new PingObserver(this._pingFrequency),
+    ];
+    children.forEach(c => this.addChild(c));
   }
 
   start() {
     LOG('observing started...');
-    this.observer = new MutationObserver((mutations, obj) => {
+    this._observer = new MutationObserver((mutations, obj) => {
       for (let mutation of mutations) {
         if (mutation.type === 'childList') {
           for (let i = 0; i < mutation.addedNodes.length; ++i) {
             const node = mutation.addedNodes.item(i);
             if (node.id && node.id.startsWith('chat-boards-')) {
 
-              this.gameId = node.id.substr(13); // looks like id of node is chat-board- followed by 0 followed by gameID, is this true?
+              // looks like id of node is chat-board- followed by 0 followed by gameID, is this true?
+              this._gameId = node.id.substr(13);
 
-              for (let observer of this.childObservers) {
-                observer.stop();
-              }
-
-              const initAndStartObserving = () => {
-                const chatStreamElem = document.querySelector('.chat-stream-component');
-                const movesListElem = document.querySelector('.vertical-move-list-component').querySelector('div');
-                const openingNameElem = document.querySelector('.board-opening-name');
-
-                const whiteTimeElem = document.querySelector('.clock-white');
-                const blackTimeElem = document.querySelector('.clock-black');
-
-                const gameStateEvents = Array.from(chatStreamElem.querySelectorAll('.chat-message-component'))
-                .filter(msg => isChatGameMessage(msg, this.gameId))
-                .map(msg => chatGameMessageToEvent(msg))
-                .filter(e => e);
-
-                const moveEvents = Array.from(movesListElem.querySelectorAll('.move-text-component'))
-                .map(e => moveElementToEvent(e));
-
-                this.notifyHandlers({
-                  type: 'init',
-                  gameStateEvents,
-                  moveEvents,
-                  openingName: openingElementToName(openingNameElem),
-                });
-
-                const chatObserver = new ChatObserver(chatStreamElem, this.gameId, this);
-                const movesObserver = new MovesObserver(movesListElem, this);
-                const openingObserver = new OpeningObserver(openingNameElem, this);
-
-                const whiteTimeObserver = new TimeObserver(whiteTimeElem, this.gameId, 'white', this);
-                const blackTimeObserver = new TimeObserver(blackTimeElem, this.gameId, 'black', this);
-
-                const pingObserver = new PingObserver(this.pingFrequency, this.gameId, this);
-
-                this.childObservers = [chatObserver, movesObserver, openingObserver, whiteTimeObserver, blackTimeObserver, pingObserver];
-                this.childObservers.forEach(o => o.start());
-              }
               // we set timeout so that initial moves list and opening name have time to load
               // maybe this should be done in a better way?
-              setTimeout(initAndStartObserving, 500);
+              setTimeout(() => {
+                this.stopChildren();
+                this.clearChildren();
+                this.initChildren();
+                this.startChildren();
+              }, 500);
             }
           }
         }
       }
     })
-    .observe(document, {
+    .observe(this._target, {
       attributes: false,
       childList: true,
       subtree: true,
@@ -99,4 +86,4 @@ class GamesObserver {
   }
 }
 
-export { GamesObserver };
+export { LiveGameObserver };
