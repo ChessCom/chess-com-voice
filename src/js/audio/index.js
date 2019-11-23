@@ -12,8 +12,8 @@ const VoiceFactory = ({ voice, mute, volume }) => {
     }
   }
   const obj = voices[voice];
-  obj.setMute(mute);
-  obj.setVolume(volume);
+  obj.mute = mute;
+  obj.volume = volume;
   return obj;
 };
 

@@ -1,6 +1,7 @@
 'use strict';
 
 import { Settings } from './settings';
+import '../css/popup.css';
 import { LOG } from './utils';
 
 // grab UI controls from document

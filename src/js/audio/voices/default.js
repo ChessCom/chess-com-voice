@@ -1,27 +1,7 @@
 'use strict';
 
-import { AudioSequence, PlayQueue, makeAudioPath } from '../utils';
+import { AbstractVoice } from './abstract';
 import { matchSan, pieceCodeToName, LOG } from '../../utils';
-
-const defaultBasePath = 'sounds/default/mp3/';
-const defaultExtension = 'mp3';
-
-const getDrawAudioIds = ({ reason }) => {
-  return [
-    'game_result/draw',
-    'misc/by',
-    `game_drew_reason/${reason}`,
-  ];
-}
-
-const getWinAudioIds = ({ winnerColor, reason }) => {
-  return [
-    `color/${winnerColor}`,
-    'game_result/wins',
-    reason === 'time' ? 'misc/on' : 'misc/by',
-    `game_won_reason/${reason}`,
-  ];
-}
 
 const getIdleAudioIds = ({ playerColor, idleTime }) => {
   const choices = {
@@ -102,46 +82,33 @@ const getMoveAudioIds = (san) => {
   return seq;
 }
 
-class DefaultVoice {
-  constructor({ volume, mute }) {
-    this.volume = volume;
-    this.mute = mute;
-    this.q = new PlayQueue();
-  }
+const defaultBasePath = 'sounds/default/mp3/';
+const defaultExtension = 'mp3';
 
-  setMute(value) {
-    this.mute = value;
-    if (this.mute) {
-      this.q.clear();
-    }
-  }
-
-  setVolume(value) {
-    this.volume = value;
-  }
-
-  _playIds(ids, basePath = defaultBasePath, extension = defaultExtension, priority = 5) {
-    if (this.mute) {
-      return;
-    }
-    const audios = ids.map(id => makeAudioPath({ basePath, identifierPath: id, extension }));
-    const seq = new AudioSequence(audios, this.volume);
-    this.q.enqueue(seq, priority);
-  }
+class DefaultVoice extends AbstractVoice {
 
   move({ san }) {
     const ids = getMoveAudioIds(san);
-    this._playIds(ids);
+    this._playIds(ids, defaultBasePath, defaultExtension);
   }
 
   win({ winnerColor, reason }) {
-    const ids = getWinAudioIds({ winnerColor, reason });
-    this._playIds(ids);
+    const ids = [
+      `color/${winnerColor}`,
+      'game_result/wins',
+      reason === 'time' ? 'misc/on' : 'misc/by',
+      `game_won_reason/${reason}`,
+    ];
+    this._playIds(ids, defaultBasePath, defaultExtension);
   }
 
   draw({ reason }) {
-    const ids = getDrawAudioIds({ reason });
-    this._playIds(ids);
+    const ids = [
+      'game_result/draw',
+      'misc/by',
+      `game_drawn_reason/${reason}`,
+    ];
+    this._playIds(ids, defaultBasePath, defaultExtension);
   }
 
   idle({ idleTime, playerColor }) {
