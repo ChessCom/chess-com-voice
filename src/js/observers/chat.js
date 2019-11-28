@@ -26,8 +26,9 @@ const chatGameMessageToEvent = (elem) => {
     };
   } else if (eventType === 'gameOver') {
     const possibleDrawText = elem.querySelector('a').textContent.toLowerCase();
-    if (possibleDrawText.startsWith('game drawn')) {
-      // TODO: is 50 move-rule indeed communicated by that exact string?
+    if (possibleDrawText.startsWith('game drawn') || possibleDrawText.startsWith('draw')) {
+      // usually starts with 'game drawn' by there is at least one case when it starts with 'draw':
+      // 'Draw: Black ran out of time, but White has insufficient material'
       const reasons = ['stalemate', 'insufficient material', '50 move-rule', 'repetition', 'agreement'];
       let drawnBy = undefined;
       for (const reason of reasons) {
