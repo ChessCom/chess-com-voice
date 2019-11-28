@@ -60,6 +60,20 @@ const chatGameMessageToEvent = (elem) => {
       winnerUsername,
       wonBy,
     };
+  } else if (eventType === 'gameDrawOffer') {
+    // TODO: check what happens textContent begins with player's title if the player has title
+    const playerUsername = elem.textContent.split(' ')[0];
+    return {
+      type: 'drawOffered',
+      playerUsername,
+    };
+  } else if (eventType === 'gameDrawDeclined') {
+    // TODO: check what happens textContent begins with player's title if the player has title
+    const playerUsername = elem.textContent.split(' ')[0];
+    return {
+      type: 'drawDeclined',
+      playerUsername,
+    };
   }
   return null;
 };

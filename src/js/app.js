@@ -20,6 +20,7 @@ const init = () => {
     const manager = new GamesManager(idleTimeout);
     manager.addListener('start', ({ gameId, whiteUsername, blackUsername }) => {
       LOG(`new game started, gameId=${gameId} whiteUsername=${whiteUsername} blackUsername=${blackUsername}`);
+      voiceObj.start();
     });
     manager.addListener('end', ({ gameId, ...params }) => {
       if (params.draw) {
@@ -38,16 +39,29 @@ const init = () => {
 
     manager.addListener('opening', ({ gameId, name }) => {
       LOG(`We have opening ${name}`);
+      voiceObj.opening({ name });
     });
 
-    manager.addListener('time', ({ playerColor, seconds }) => {
+    manager.addListener('time', function({ playerColor, seconds }) {
       LOG(`${playerColor} clock is ${seconds}s`);
-      // TODO: play some sounds
+      if (seconds === 30 || seconds === 15) {
+        voiceObj.time({ playerColor, seconds });
+      }
     });
 
     manager.addListener('idle', ({ idleTime, playerColor }) => {
       LOG(`${playerColor} is idle for ${idleTime/1000}s`);
       voiceObj.idle({ idleTime, playerColor });
+    });
+
+    manager.addListener('drawOffered', ({ playerColor, playerUsername }) => {
+      LOG(`draw offered by ${playerColor} (${playerUsername})`);
+      voiceObj.drawOffered({ playerColor, playerUsername });
+    });
+
+    manager.addListener('drawDeclined', ({ playerColor, playerUsername }) => {
+      LOG(`draw declined by ${playerColor} (${playerUsername})`);
+      voiceObj.drawDeclined({ playerColor, playerUsername });
     });
 
     const liveGameObserver = new LiveGameObserver(document, pingFrequency);

@@ -33,6 +33,12 @@ const defaultExtension = 'mp3';
 
 class DannyVoice extends AbstractVoice {
 
+  start() {
+    // TODO: put appropriate sounds here
+    const ids = ['game_start/uncle_sasha'];
+    this._playIds(ids, defaultBasePath, defaultExtension);
+  }
+
   move({ san }) {
     const parts = shortestStringCover({
       target: san,
@@ -59,6 +65,30 @@ class DannyVoice extends AbstractVoice {
       getRandomForId('draw'),
       getRandomForId('by'),
       getRandomForId(reason),
+    ];
+    this._playIds(ids, defaultBasePath, defaultExtension);
+  }
+
+  time({ playerColor, seconds }) {
+    // TODO: put appropriate sounds here
+    const ids = ['time/move_quickly_you_are_running_out_of_time'];
+    this._playIds(ids, defaultBasePath, defaultExtension);
+  }
+
+  drawOffered({ playerColor, playerUsername }) {
+    const ids = [
+      getRandomForId(playerColor),
+      getRandomForId('offered'),
+      getRandomForId('draw'),
+    ];
+    this._playIds(ids, defaultBasePath, defaultExtension);
+  }
+
+  drawDeclined({ playerColor, playerUsername }) {
+    const ids = [
+      getRandomForId(playerColor),
+      getRandomForId('declined'),
+      getRandomForId('draw'),
     ];
     this._playIds(ids, defaultBasePath, defaultExtension);
   }

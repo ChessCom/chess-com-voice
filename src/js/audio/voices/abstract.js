@@ -35,32 +35,38 @@ class AbstractVoice {
 
   start() {
     LOG('start sound not implemented');
-    return [];
   }
 
   move({ san }) {
     LOG('move sound not implemented');
-    return [];
   }
 
   idle({ playerColor, time }) {
     LOG('idle sound not implemented');
-    return [];
   }
 
   time({ playeColor, time }) {
     LOG('time sound not implemented');
-    return [];
   }
 
   win({ winnerColor, reason }) {
     LOG('win sound not implemented');
-    return [];
   }
 
   draw({ reason }) {
     LOG('draw sound not implemented');
-    return [];
+  }
+
+  opening({ name }) {
+    LOG('opening sound not implemented');
+  }
+
+  drawOffered({ playerColor, playerUsername }) {
+    LOG('draw offered sound not implemented');
+  }
+
+  drawDeclined({ playerColor, playerUsername }) {
+    LOG('draw declined sound not implemented');
   }
 };
 

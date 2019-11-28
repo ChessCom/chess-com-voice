@@ -13,6 +13,8 @@ class GamesManager {
       'end': [],
       'idle': [],
       'time': [],
+      'drawOffered': [],
+      'drawDeclined': [],
     };
     this._idleTimeout = idleTimeout;
   }
@@ -91,6 +93,14 @@ class GamesManager {
             game.addOpening(name);
             this._notifiListeners('opening', { gameId, ...params });
           }
+        } else if (type === 'drawOffered') {
+          const { playerUsername } = params;
+          const playerColor = game.colorOfUsername(playerUsername);
+          this._notifiListeners('drawOffered', { gameId, playerColor, ...params });
+        } else if (type === 'drawDeclined') {
+          const { playerUsername } = params;
+          const playerColor = game.colorOfUsername(playerUsername);
+          this._notifiListeners('drawDeclined', { gameId, playerColor, ...params });
         }
       }
     }
