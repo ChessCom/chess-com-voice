@@ -55,8 +55,12 @@ class Game {
     }
   }
 
+  _openingNameToId(name) {
+    return name.split(':')[0];
+  }
+
   hasOpening(openingName) {
-    return this._openings.has(openingName);
+    return this._openings.has(this._openingNameToId(openingName));
   }
 
   _markUpdated() {
@@ -64,7 +68,7 @@ class Game {
   }
 
   addOpening(openingName) {
-    this._openings.add(openingName);
+    this._openings.add(this._openingNameToId(openingName));
     this._markUpdated();
   }
 
