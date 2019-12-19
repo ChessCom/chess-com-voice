@@ -44,7 +44,7 @@ class Game {
       return 0;
     }
     const now = Date.now();
-    return now - this._updateTimestamp;
+    return Math.floor((now - this._updateTimestamp) / 1000); // in seconds
   }
 
   colorOfUsername(username) {

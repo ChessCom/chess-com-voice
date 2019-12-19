@@ -25,7 +25,7 @@ class TimeObserver extends AbstractDOMObserver {
     LOG('starting time observer');
     this._observer = new MutationObserver((mutations, obj) => {
       const seconds = timeElementToSeconds(this._target);
-      if (seconds !== this._seconds) {
+      if (this._seconds === null || seconds < this._seconds) {
         this._seconds = seconds;
         this._notifyHandlers({
           type: 'time',

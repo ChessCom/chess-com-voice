@@ -1,6 +1,11 @@
 'use strict';
 
+const DEBUG = false;
+
 const LOG = (msg) => {
+  if (!DEBUG) {
+    return;
+  }
   chrome.runtime.sendMessage({ type: 'log', message: msg });
 };
 

@@ -21,7 +21,7 @@ class PingObserver extends AbstractObserver {
     LOG('starting ping observer');
     this._interval = setInterval(() => {
       this._notifyHandlers({ type: 'ping' });
-    }, this._frequency);
+    }, 1000*this._frequency);
   }
 }
 

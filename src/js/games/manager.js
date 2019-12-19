@@ -4,7 +4,7 @@ import { Game } from './game';
 import { LOG } from '../utils';
 
 class GamesManager {
-  constructor(idleTimeout) {
+  constructor() {
     this._games = {};
     this._listeners = {
       'start': [],
@@ -16,7 +16,6 @@ class GamesManager {
       'drawOffered': [],
       'drawDeclined': [],
     };
-    this._idleTimeout = idleTimeout;
   }
 
   addListener(type, listener) {
@@ -65,12 +64,10 @@ class GamesManager {
       }
       const now = Date.now();
       if (type === 'ping') {
-        if (game.idle > this._idleTimeout) {
-          this._notifiListeners('idle', {
-            idleTime: game.idle,
-            playerColor: game.currentPlayerColor,
-          });
-        }
+        this._notifiListeners('idle', {
+          seconds: game.idle,
+          playerColor: game.currentPlayerColor,
+        });
       } else if (type === 'time') {
         this._notifiListeners('time', { gameId, ...params });
       } else {

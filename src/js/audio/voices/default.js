@@ -3,32 +3,6 @@
 import { AbstractVoice } from './abstract';
 import { matchSan, pieceCodeToName, LOG } from '../../utils';
 
-const getIdleAudioIds = ({ playerColor, idleTime }) => {
-  const choices = {
-    white: [
-      'misc_accentuating_whites_helplessness',
-      'misc_how_does_white_improve',
-      'misc_white_can_try_to_consolidate_position',
-      'misc_whites_next_move',
-    ],
-    black: [
-      'misc_asking_black_what_is_he_doing',
-      'misc_black_just_suffering',
-      'misc_black_is_struggling_in_this_position',
-      'misc_why_did_black_allow_that',
-    ],
-  };
-
-  const seconds = idleTime / 1000;
-  // play something every 10 seconds of idle time
-  const period = 10;
-  if (((seconds < period) && (seconds % period < 4)) || (seconds % period < 1)) {
-    const id = choices[playerColor][Math.floor(Math.random()*choices[playerColor].length)];
-    return [`idle/${playerColor}/${id}`];
-  }
-  return null;
-};
-
 const getMoveAudioIds = (san) => {
   const match = matchSan(san);
 
@@ -109,15 +83,6 @@ class DefaultVoice extends AbstractVoice {
       `game_drawn_reason/${reason}`,
     ];
     this._playIds(ids, defaultBasePath, defaultExtension);
-  }
-
-  idle({ idleTime, playerColor }) {
-    //TODO: maybe implement something?
-    // this is just for showcase
-    const ids = getIdleAudioIds({ playerColor, idleTime });
-    if (ids !== null) {
-      this._playIds(ids, defaultBasePath, 'ogg', 0);
-    }
   }
 };
 

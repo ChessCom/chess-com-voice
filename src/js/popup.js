@@ -10,9 +10,8 @@ const muteElem = document.getElementById('mute');
 const voiceElems = document.querySelectorAll('input[type="radio"][name="voice"]');
 
 // initialize values for UI controls
-Settings.get(['volume', 'mute', 'voice'], ({ volume, mute, voice }) => {
+Settings.get(['volume', 'voice'], ({ volume, voice }) => {
   volumeElem.value = volume;
-  muteElem.checked = mute;
   Array.from(voiceElems).filter(e => e.value === voice)[0].checked = true;
 });
 
@@ -29,11 +28,6 @@ const notifySettingsChange = () => {
 volumeElem.addEventListener('change', (event) => {
   const value = event.target.value;
   Settings.set({ volume: value }, notifySettingsChange);
-});
-
-muteElem.addEventListener('change', (event) => {
-  const value = event.target.checked;
-  Settings.set({ mute: value }, notifySettingsChange);
 });
 
 voiceElems.forEach((e) => {

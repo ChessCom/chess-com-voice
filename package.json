@@ -1,7 +1,7 @@
 {
   "name": "chess-com-voiceover",
   "version": "0.0.1",
-  "description": "Voice commentary for chess.com",
+  "description": "Hear chess moves and annotation spoken as they are played on Chess.com.",
   "scripts": {
     "build": "node utils/build.js",
     "start": "node utils/webserver.js"

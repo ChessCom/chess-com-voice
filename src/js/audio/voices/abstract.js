@@ -4,20 +4,12 @@ import { AudioSequence, PlayQueue, makeAudioPath } from '../utils';
 import { LOG } from '../../utils';
 
 class AbstractVoice {
-  constructor({ volume, mute }) {
+  constructor({ volume }) {
     if (new.target === AbstractVoice) {
       throw new TypeError("Cannot construct AbstractVoice instances directly");
     }
     this._volume = volume;
-    this._mute = mute;
     this._q = new PlayQueue();
-  }
-
-  set mute(value) {
-    this._mute = value;
-    if (this._mute) {
-      this._q.clear();
-    }
   }
 
   set volume(value) {
@@ -25,9 +17,6 @@ class AbstractVoice {
   }
 
   _playIds(ids, basePath, extension, priority = 5) {
-    if (this._mute) {
-      return;
-    }
     const audios = ids.map(id => makeAudioPath({ basePath, identifierPath: id, extension }));
     const seq = new AudioSequence(audios, this._volume);
     this._q.enqueue(seq, priority);
@@ -41,11 +30,11 @@ class AbstractVoice {
     LOG('move sound not implemented');
   }
 
-  idle({ playerColor, time }) {
+  idle({ playerColor, seconds }) {
     LOG('idle sound not implemented');
   }
 
-  time({ playeColor, time }) {
+  time({ playeColor, seconds }) {
     LOG('time sound not implemented');
   }
 

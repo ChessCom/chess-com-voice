@@ -3,16 +3,15 @@ import { DannyVoice } from './voices/danny';
 
 const voices = {};
 
-const VoiceFactory = ({ voice, mute, volume }) => {
+const VoiceFactory = ({ voice, volume }) => {
   if (!voices[voice]) {
     if (voice === 'default') {
-      voices[voice] = new DefaultVoice({ volume, mute });
+      voices[voice] = new DefaultVoice({ volume });
     } else if (voice === 'danny') {
-      voices[voice] = new DannyVoice({ volume, mute });
+      voices[voice] = new DannyVoice({ volume });
     }
   }
   const obj = voices[voice];
-  obj.mute = mute;
   obj.volume = volume;
   return obj;
 };
