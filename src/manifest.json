@@ -10,8 +10,6 @@
     "default_icon": "icon-128.png"
   },
   "permissions": [
-    "*://chess.com/*",
-    "file://*/*",
     "storage"
   ],
   "icons": {
