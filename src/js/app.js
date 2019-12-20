@@ -48,12 +48,23 @@ const init = () => {
       }
     });
 
-    manager.addListener('idle', ({ playerColor, seconds }) => {
+    const idleListener = function({ playerColor, seconds }) {
+      if (idleListener.lastSeconds === undefined) {
+        idleListener.lastSeconds = { 'white': null, 'black': null };
+      }
+      // process only when passed seconds differs from last seen one
+      if (idleListener.lastSeconds[playerColor] === seconds) {
+        return;
+      }
+      idleListener.lastSeconds[playerColor] = seconds;
+
       LOG(`${playerColor} is idle for ${seconds}s`);
-      if (seconds === 10 || (seconds > 10 && seconds % 30 === 0)) {
+      if (seconds === 10 || (seconds > 10 && (seconds % 30 === 0))) {
         voiceObj && voiceObj.idle({ playerColor, seconds });
       }
-    });
+    };
+
+    manager.addListener('idle', idleListener);
 
     manager.addListener('drawOffered', ({ playerColor, playerUsername }) => {
       LOG(`draw offered by ${playerColor} (${playerUsername})`);
