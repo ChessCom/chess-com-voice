@@ -71,7 +71,7 @@ class LiveGameObserver extends AbstractDOMObserver {
                 this.clearChildren();
                 this.initChildren();
                 this.startChildren();
-              }, 500);
+              }, 100);
             }
           }
         }
