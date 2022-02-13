@@ -61,13 +61,13 @@ class LiveGameObserver extends AbstractDOMObserver {
     LOG('observing started...');
     this._observer = new MutationObserver((mutations, obj) => {
       for (let mutation of mutations) {
-        if (mutation.type === 'childList') {
+        if (mutation.type === 'childList' && mutation.target.id === 'board-layout-chessboard') {
           for (let i = 0; i < mutation.addedNodes.length; ++i) {
             const node = mutation.addedNodes.item(i);
-            if (node.id && node.id.startsWith('chat-boards-')) {
+            if (node.id && node.id.startsWith('board-liveGame-')) {
 
-              // looks like id of node is chat-board- followed by 0 followed by gameID, is this true?
-              this._gameId = node.id.substr(13);
+              // looks like id of node is board-liveGame- followed by 0 followed by gameID, is this true?
+              this._gameId = node.id.substr('board-liveGame-'.length);
 
               // we set timeout so that initial moves list and opening name have time to load
               // maybe this should be done in a better way?
