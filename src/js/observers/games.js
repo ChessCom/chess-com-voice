@@ -26,7 +26,9 @@ class LiveGameObserver extends AbstractDOMObserver {
     const movesForPlayedGame = this._target.querySelector('.vertical-move-list');
     const movesForObservedGame = this._target.querySelector('.vertical-move-list-component');
     const movesListElem = movesForPlayedGame ? movesForPlayedGame : movesForObservedGame;
-    const openingNameElem = this._target.querySelector('.board-opening-name');
+    const openingForPlayedGame = this._target.querySelector('.eco-opening-name');
+    const openingForObservedGame = this._target.querySelector('.board-opening-name');
+    const openingNameElem = openingForPlayedGame ? openingForPlayedGame : openingForObservedGame;
     const whiteTimeElem = this._target.querySelector('.clock-white');
     const blackTimeElem = this._target.querySelector('.clock-black');
 
