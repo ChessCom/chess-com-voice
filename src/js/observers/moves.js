@@ -19,9 +19,8 @@ class MovesObserver extends AbstractDOMObserver {
         if (mutation.type === 'childList') {
           for (let i = 0; i < mutation.addedNodes.length; ++i) {
             const node = mutation.addedNodes.item(i);
-            const moveNodes = node.querySelectorAll('.move-text-component');
-            for (const moveNode of moveNodes) {
-              this._notifyHandlers(moveElementToEvent(moveNode));
+            if (node.classList.contains('node')) {
+              this._notifyHandlers(moveElementToEvent(node));
             }
           }
         }

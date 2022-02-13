@@ -21,7 +21,9 @@ class LiveGameObserver extends AbstractDOMObserver {
 
   initChildren() {
     const chatStreamElem = this._target.querySelector('.chat-stream-component');
-    const movesListElem = this._target.querySelector('.vertical-move-list-component').querySelector('div');
+    const movesForPlayedGame = this._target.querySelector('.vertical-move-list');
+    const movesForObservedGame = this._target.querySelector('.vertical-move-list-component');
+    const movesListElem = movesForPlayedGame ? movesForPlayedGame : movesForObservedGame;
     const openingNameElem = this._target.querySelector('.board-opening-name');
     const whiteTimeElem = this._target.querySelector('.clock-white');
     const blackTimeElem = this._target.querySelector('.clock-black');
@@ -31,7 +33,7 @@ class LiveGameObserver extends AbstractDOMObserver {
     .map(msg => chatGameMessageToEvent(msg))
     .filter(e => e);
 
-    const moveEvents = Array.from(movesListElem.querySelectorAll('.move-text-component'))
+    const moveEvents = Array.from(movesListElem.querySelectorAll('.move .node'))
     .map(e => moveElementToEvent(e));
 
     this._notifyHandlers({
