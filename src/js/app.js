@@ -14,72 +14,69 @@ let voiceObj = null;
 const pingFrequency = 1; // in seconds
 
 const init = () => {
-  let chatElem = document.querySelector('.sidebar-tabsetBottom');
-  if (chatElem !== null) {
-    const manager = new GamesManager();
-    manager.addListener('start', ({ gameId, whiteUsername, blackUsername }) => {
-      LOG(`new game started, gameId=${gameId} whiteUsername=${whiteUsername} blackUsername=${blackUsername}`);
-      voiceObj && voiceObj.start();
-    });
-    manager.addListener('end', ({ gameId, ...params }) => {
-      if (params.draw) {
-        LOG(`game ended in a draw, reason=${params.drawnBy}`);
-        voiceObj.draw({ reason: params.drawnBy });
-      } else {
-        LOG(`game ended, winnerColor=${params.winnerColor}, winnerUsername=${params.winnerUsername} wonBy=${params.wonBy}`);
-        voiceObj && voiceObj.win(({ winnerColor: params.winnerColor, reason: params.wonBy }));
-      }
-    });
+  const manager = new GamesManager();
+  manager.addListener('start', ({ gameId, whiteUsername, blackUsername }) => {
+    LOG(`new game started, gameId=${gameId} whiteUsername=${whiteUsername} blackUsername=${blackUsername}`);
+    voiceObj && voiceObj.start();
+  });
+  manager.addListener('end', ({ gameId, ...params }) => {
+    if (params.draw) {
+      LOG(`game ended in a draw, reason=${params.drawnBy}`);
+      voiceObj.draw({ reason: params.drawnBy });
+    } else {
+      LOG(`game ended, winnerColor=${params.winnerColor}, winnerUsername=${params.winnerUsername} wonBy=${params.wonBy}`);
+      voiceObj && voiceObj.win(({ winnerColor: params.winnerColor, reason: params.wonBy }));
+    }
+  });
 
-    manager.addListener('move', ({ gameId, playerUsername, playerColor, san, ...params }) => {
-      LOG(`${playerColor} (${playerUsername}) played ${san}`);
-      voiceObj && voiceObj.move({ san });
-    });
+  manager.addListener('move', ({ gameId, playerUsername, playerColor, san, ...params }) => {
+    LOG(`${playerColor} (${playerUsername}) played ${san}`);
+    voiceObj && voiceObj.move({ san });
+  });
 
-    manager.addListener('opening', ({ gameId, name }) => {
-      LOG(`We have opening ${name}`);
-      voiceObj && voiceObj.opening({ name });
-    });
+  manager.addListener('opening', ({ gameId, name }) => {
+    LOG(`We have opening ${name}`);
+    voiceObj && voiceObj.opening({ name });
+  });
 
-    manager.addListener('time', ({ playerColor, seconds }) => {
-      LOG(`${playerColor} clock is ${seconds}s`);
-      if (seconds === 30 || seconds === 15) {
-        voiceObj && voiceObj.time({ playerColor, seconds });
-      }
-    });
+  manager.addListener('time', ({ playerColor, seconds }) => {
+    LOG(`${playerColor} clock is ${seconds}s`);
+    if (seconds === 30 || seconds === 15) {
+      voiceObj && voiceObj.time({ playerColor, seconds });
+    }
+  });
 
-    const idleListener = function({ playerColor, seconds }) {
-      if (idleListener.lastSeconds === undefined) {
-        idleListener.lastSeconds = { 'white': null, 'black': null };
-      }
-      // process only when passed seconds differs from last seen one
-      if (idleListener.lastSeconds[playerColor] === seconds) {
-        return;
-      }
-      idleListener.lastSeconds[playerColor] = seconds;
+  const idleListener = function({ playerColor, seconds }) {
+    if (idleListener.lastSeconds === undefined) {
+      idleListener.lastSeconds = { 'white': null, 'black': null };
+    }
+    // process only when passed seconds differs from last seen one
+    if (idleListener.lastSeconds[playerColor] === seconds) {
+      return;
+    }
+    idleListener.lastSeconds[playerColor] = seconds;
 
-      LOG(`${playerColor} is idle for ${seconds}s`);
-      if (seconds === 10 || (seconds > 10 && (seconds % 30 === 0))) {
-        voiceObj && voiceObj.idle({ playerColor, seconds });
-      }
-    };
+    LOG(`${playerColor} is idle for ${seconds}s`);
+    if (seconds === 10 || (seconds > 10 && (seconds % 30 === 0))) {
+      voiceObj && voiceObj.idle({ playerColor, seconds });
+    }
+  };
 
-    manager.addListener('idle', idleListener);
+  manager.addListener('idle', idleListener);
 
-    manager.addListener('drawOffered', ({ playerColor, playerUsername }) => {
-      LOG(`draw offered by ${playerColor} (${playerUsername})`);
-      voiceObj && voiceObj.drawOffered({ playerColor, playerUsername });
-    });
+  manager.addListener('drawOffered', ({ playerColor, playerUsername }) => {
+    LOG(`draw offered by ${playerColor} (${playerUsername})`);
+    voiceObj && voiceObj.drawOffered({ playerColor, playerUsername });
+  });
 
-    manager.addListener('drawDeclined', ({ playerColor, playerUsername }) => {
-      LOG(`draw declined by ${playerColor} (${playerUsername})`);
-      voiceObj && voiceObj.drawDeclined({ playerColor, playerUsername });
-    });
+  manager.addListener('drawDeclined', ({ playerColor, playerUsername }) => {
+    LOG(`draw declined by ${playerColor} (${playerUsername})`);
+    voiceObj && voiceObj.drawDeclined({ playerColor, playerUsername });
+  });
 
-    const liveGameObserver = new LiveGameObserver(document, pingFrequency);
-    liveGameObserver.addHandler((event) => { manager.handleEvent(event)});
-    liveGameObserver.start();
-  }
+  const liveGameObserver = new LiveGameObserver(document, pingFrequency);
+  liveGameObserver.addHandler((event) => { manager.handleEvent(event)});
+  liveGameObserver.start();
 };
 
 const loadVoiceObj = (callback) => {
