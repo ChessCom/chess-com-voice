@@ -4,7 +4,7 @@ import { LOG } from '../utils';
 import { AbstractDOMObserver } from './abstract';
 
 const timeElementToSeconds = e => {
-  const val = e.getAttribute('data-clock');
+  const val = e.querySelector('span').textContent;
   const firstSplit = val.split(':');
   const minutes = parseInt(firstSplit[0]);
   const secondSplit = firstSplit[1].split('.');
