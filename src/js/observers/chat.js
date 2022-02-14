@@ -10,21 +10,18 @@ const isChatGameMessage = (e, gameId) => {
 }
 
 const chatGameMessageToEvent = (elem) => {
-  const eventType = elem.getAttribute('data-notification');
-  const gameId = elem.getAttribute('data-message-id').split('-', 2)[1];
-
   // TODO: handle gameDrawDeclined, gameDrawAccepted, gameDrawOffered events, what exact HTML nodes represent those events?
-  if (eventType === 'gameNewGamePlaying' || eventType === 'gameNewGameObserving') {
+  if (elem.className === 'live-game-start-component' || elem.className === 'gameNewGameObserving') {
     const players = elem.querySelectorAll('.username');
     const whiteUsername = players[0].getAttribute('data-username');
     const blackUsername = players[1].getAttribute('data-username');
     return {
       type: 'started',
-      mode: eventType === 'gameNewGamePlaying' ? 'playing' : 'observing',
+      mode: elem.className === 'live-game-start-component' ? 'playing' : 'observing',
       whiteUsername,
       blackUsername,
     };
-  } else if (eventType === 'gameOver') {
+  } else if (elem.className === 'gameOver') {
     const possibleDrawText = elem.querySelector('a').textContent.toLowerCase();
     if (possibleDrawText.startsWith('game drawn') || possibleDrawText.startsWith('draw')) {
       // usually starts with 'game drawn' by there is at least one case when it starts with 'draw':
@@ -60,14 +57,14 @@ const chatGameMessageToEvent = (elem) => {
       winnerUsername,
       wonBy,
     };
-  } else if (eventType === 'gameDrawOffer') {
+  } else if (elem.className === 'live-game-draw-offer-component') {
     // TODO: check what happens textContent begins with player's title if the player has title
     const playerUsername = elem.textContent.split(' ')[0];
     return {
       type: 'drawOffered',
       playerUsername,
     };
-  } else if (eventType === 'gameDrawDeclined') {
+  } else if (elem.className === 'gameDrawDeclined') {
     // TODO: check what happens textContent begins with player's title if the player has title
     const playerUsername = elem.textContent.split(' ')[0];
     return {

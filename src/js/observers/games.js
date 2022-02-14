@@ -20,18 +20,23 @@ class LiveGameObserver extends AbstractDOMObserver {
   }
 
   initChildren() {
-    const chatStreamElem = this._target.querySelector('.chat-stream-component');
-    const movesListElem = this._target.querySelector('.vertical-move-list-component').querySelector('div');
-    const openingNameElem = this._target.querySelector('.board-opening-name');
+    const chatForPlayedGame = this._target.querySelector('.chat-scroll-area-component');
+    const chatForObservedGame = this._target.querySelector('.chat-stream-component');
+    const chatStreamElem = chatForPlayedGame ? chatForPlayedGame : chatForObservedGame;
+    const movesForPlayedGame = this._target.querySelector('.vertical-move-list');
+    const movesForObservedGame = this._target.querySelector('.vertical-move-list-component');
+    const movesListElem = movesForPlayedGame ? movesForPlayedGame : movesForObservedGame;
+    const openingForPlayedGame = this._target.querySelector('.eco-opening-name');
+    const openingForObservedGame = this._target.querySelector('.board-opening-name');
+    const openingNameElem = openingForPlayedGame ? openingForPlayedGame : openingForObservedGame;
     const whiteTimeElem = this._target.querySelector('.clock-white');
     const blackTimeElem = this._target.querySelector('.clock-black');
 
-    const gameStateEvents = Array.from(chatStreamElem.querySelectorAll('.chat-message-component'))
-    .filter(msg => isChatGameMessage(msg, this._gameId))
+    const gameStateEvents = Array.from(chatStreamElem.children)
     .map(msg => chatGameMessageToEvent(msg))
     .filter(e => e);
 
-    const moveEvents = Array.from(movesListElem.querySelectorAll('.move-text-component'))
+    const moveEvents = Array.from(movesListElem.querySelectorAll('.move .node'))
     .map(e => moveElementToEvent(e));
 
     this._notifyHandlers({
@@ -56,13 +61,13 @@ class LiveGameObserver extends AbstractDOMObserver {
     LOG('observing started...');
     this._observer = new MutationObserver((mutations, obj) => {
       for (let mutation of mutations) {
-        if (mutation.type === 'childList') {
+        if (mutation.type === 'childList' && mutation.target.id === 'board-layout-chessboard') {
           for (let i = 0; i < mutation.addedNodes.length; ++i) {
             const node = mutation.addedNodes.item(i);
-            if (node.id && node.id.startsWith('chat-boards-')) {
+            if (node.id && node.id.startsWith('board-liveGame-')) {
 
-              // looks like id of node is chat-board- followed by 0 followed by gameID, is this true?
-              this._gameId = node.id.substr(13);
+              // looks like id of node is board-liveGame- followed by 0 followed by gameID, is this true?
+              this._gameId = node.id.substr('board-liveGame-'.length);
 
               // we set timeout so that initial moves list and opening name have time to load
               // maybe this should be done in a better way?
