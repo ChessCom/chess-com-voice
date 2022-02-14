@@ -15,7 +15,7 @@ const chatGameMessageToEvent = (elem) => {
       whiteUsername,
       blackUsername,
     };
-  } else if (elem.className === 'gameOver') {
+  } else if (elem.className === 'live-game-over-component') {
     const possibleDrawText = elem.querySelector('a').textContent.toLowerCase();
     if (possibleDrawText.startsWith('game drawn') || possibleDrawText.startsWith('draw')) {
       // usually starts with 'game drawn' by there is at least one case when it starts with 'draw':
