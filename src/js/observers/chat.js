@@ -51,7 +51,7 @@ const chatGameMessageToEvent = (elem) => {
       winnerUsername,
       wonBy,
     };
-  } else if (elem.className === 'live-game-draw-offer-component') {
+  } else if (elem.className === 'console-message-component' && elem.textContent.match(/ offered a draw$/)) {
     // TODO: check what happens textContent begins with player's title if the player has title
     const playerUsername = elem.textContent.split(' ')[0];
     return {
