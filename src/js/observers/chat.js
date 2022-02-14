@@ -3,12 +3,6 @@
 import { LOG } from '../utils';
 import { AbstractDOMObserver } from './abstract';
 
-const isChatGameMessage = (e, gameId) => {
-  return e.classList && e.classList.contains('chat-message-component')
-  && e.hasAttribute('data-notification')
-  && e.getAttribute('data-message-id') === `game-${gameId}`;
-}
-
 const chatGameMessageToEvent = (elem) => {
   // TODO: handle gameDrawDeclined, gameDrawAccepted, gameDrawOffered events, what exact HTML nodes represent those events?
   if (elem.className === 'live-game-start-component' || elem.className === 'gameNewGameObserving') {
@@ -89,11 +83,9 @@ class ChatObserver extends AbstractDOMObserver {
         if (mutation.type === 'childList') {
           for (let i = 0; i < mutation.addedNodes.length; ++i) {
             const node = mutation.addedNodes.item(i);
-            if (isChatGameMessage(node, this._gameId)) {
-              const event = chatGameMessageToEvent(node);
-              if (event) {
-                this._notifyHandlers(event);
-              }
+            const event = chatGameMessageToEvent(node);
+            if (event) {
+              this._notifyHandlers(event);
             }
           }
         }
