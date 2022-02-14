@@ -65,9 +65,14 @@ class LiveGameObserver extends AbstractDOMObserver {
           for (let i = 0; i < mutation.addedNodes.length; ++i) {
             const node = mutation.addedNodes.item(i);
             if (node.id && node.id.startsWith('board-liveGame-')) {
-
               // looks like id of node is board-liveGame- followed by 0 followed by gameID, is this true?
-              this._gameId = node.id.substr('board-liveGame-'.length);
+              const nodeGameId = node.id.substr('board-liveGame-'.length);
+
+              if (this._gameId === nodeGameId) {
+                break;
+              }
+
+              this._gameId = nodeGameId;
 
               // we set timeout so that initial moves list and opening name have time to load
               // maybe this should be done in a better way?
