@@ -7,8 +7,8 @@ const chatGameMessageToEvent = (elem) => {
   // TODO: handle gameDrawDeclined, gameDrawAccepted, gameDrawOffered events, what exact HTML nodes represent those events?
   if (elem.className === 'live-game-start-component' || elem.className === 'gameNewGameObserving') {
     const players = elem.querySelectorAll('.username');
-    const whiteUsername = players[0].getAttribute('data-username');
-    const blackUsername = players[1].getAttribute('data-username');
+    const whiteUsername = players[0].textContent;
+    const blackUsername = players[1].textContent;
     return {
       type: 'started',
       mode: elem.className === 'live-game-start-component' ? 'playing' : 'observing',
@@ -35,7 +35,7 @@ const chatGameMessageToEvent = (elem) => {
       };
     }
     const usernameElem = elem.querySelector('.username');
-    const winnerUsername = usernameElem.getAttribute('data-username');
+    const winnerUsername = usernameElem.textContent;
     const reasons = ['game abandoned', 'time', 'checkmate', 'resignation'];
     const text = usernameElem.nextSibling.textContent.trim().toLowerCase();
     let wonBy = undefined;
