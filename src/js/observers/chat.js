@@ -3,25 +3,19 @@
 import { LOG } from '../utils';
 import { AbstractDOMObserver } from './abstract';
 
-const isChatGameMessage = (e, gameId) => {
-  return e.classList && e.classList.contains('chat-message-component')
-  && e.hasAttribute('data-notification')
-  && e.getAttribute('data-message-id') === `game-${gameId}`;
-}
-
 const chatGameMessageToEvent = (elem) => {
   // TODO: handle gameDrawDeclined, gameDrawAccepted, gameDrawOffered events, what exact HTML nodes represent those events?
   if (elem.className === 'live-game-start-component' || elem.className === 'gameNewGameObserving') {
     const players = elem.querySelectorAll('.username');
-    const whiteUsername = players[0].getAttribute('data-username');
-    const blackUsername = players[1].getAttribute('data-username');
+    const whiteUsername = players[0].textContent;
+    const blackUsername = players[1].textContent;
     return {
       type: 'started',
       mode: elem.className === 'live-game-start-component' ? 'playing' : 'observing',
       whiteUsername,
       blackUsername,
     };
-  } else if (elem.className === 'gameOver') {
+  } else if (elem.className === 'live-game-over-component') {
     const possibleDrawText = elem.querySelector('a').textContent.toLowerCase();
     if (possibleDrawText.startsWith('game drawn') || possibleDrawText.startsWith('draw')) {
       // usually starts with 'game drawn' by there is at least one case when it starts with 'draw':
@@ -41,7 +35,7 @@ const chatGameMessageToEvent = (elem) => {
       };
     }
     const usernameElem = elem.querySelector('.username');
-    const winnerUsername = usernameElem.getAttribute('data-username');
+    const winnerUsername = usernameElem.textContent;
     const reasons = ['game abandoned', 'time', 'checkmate', 'resignation'];
     const text = usernameElem.nextSibling.textContent.trim().toLowerCase();
     let wonBy = undefined;
@@ -57,7 +51,7 @@ const chatGameMessageToEvent = (elem) => {
       winnerUsername,
       wonBy,
     };
-  } else if (elem.className === 'live-game-draw-offer-component') {
+  } else if (elem.className === 'console-message-component' && elem.textContent.match(/ offered a draw$/)) {
     // TODO: check what happens textContent begins with player's title if the player has title
     const playerUsername = elem.textContent.split(' ')[0];
     return {
@@ -89,11 +83,9 @@ class ChatObserver extends AbstractDOMObserver {
         if (mutation.type === 'childList') {
           for (let i = 0; i < mutation.addedNodes.length; ++i) {
             const node = mutation.addedNodes.item(i);
-            if (isChatGameMessage(node, this._gameId)) {
-              const event = chatGameMessageToEvent(node);
-              if (event) {
-                this._notifyHandlers(event);
-              }
+            const event = chatGameMessageToEvent(node);
+            if (event) {
+              this._notifyHandlers(event);
             }
           }
         }

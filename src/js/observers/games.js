@@ -2,7 +2,7 @@
 
 import { LOG } from '../utils';
 import { AbstractDOMObserver } from './abstract';
-import { ChatObserver, isChatGameMessage, chatGameMessageToEvent } from './chat';
+import { ChatObserver, chatGameMessageToEvent } from './chat';
 import { MovesObserver, moveElementToEvent } from './moves';
 import { OpeningObserver, openingElementToName } from './opening';
 import { TimeObserver } from './time';
