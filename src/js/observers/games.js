@@ -119,13 +119,16 @@ class LiveGameObserver extends AbstractDOMObserver {
   }
 
   _replaceMovesObserver(newMovesObserver) {
-    this._movesObserver.stop();
-    const index = this._children.indexOf(this._movesObserver);
-    if (index !== -1) {
-      this._children.splice(index, newMovesObserver);
-      this._movesObserver = newMovesObserver;
-      this._movesObserver.start();
+    if (this._movesObserver) {
+      this._movesObserver.stop();
+      const index = this._children.indexOf(this._movesObserver);
+      if (index !== -1) {
+        this._children.splice(index, newMovesObserver);
+      }
     }
+
+    this._movesObserver = newMovesObserver;
+    this._movesObserver.start();
   }
 }
 
