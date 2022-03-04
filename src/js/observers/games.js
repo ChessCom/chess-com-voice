@@ -108,12 +108,15 @@ class LiveGameObserver extends AbstractDOMObserver {
 
   _handleMovesListChanged(mutation) {
     if (mutation.type === 'childList' && mutation.target.className === 'sidebar-component') {
-      const wasTabPanelPossiblyReplaced = Array.prototype.slice.call(mutation.addedNodes)
-        .filter(node => node instanceof Element && node.getAttribute('role') === 'tabpanel')
-        .length > 0;
-      const movesElement = this._movesListElement();
-      if (wasTabPanelPossiblyReplaced && movesElement) {
-        this._replaceMovesObserver(new MovesObserver(movesElement));
+      const wasTabPanelPossiblyReplaced = mutation.addedNodes.length === 0;
+
+      if (wasTabPanelPossiblyReplaced) {
+        setTimeout(() => {
+          const movesElement = this._movesListElement();
+          if (movesElement) {
+            this._replaceMovesObserver(new MovesObserver(movesElement));
+          }
+        }, 100);
       }
     }
   }
