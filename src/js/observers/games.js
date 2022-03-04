@@ -19,13 +19,17 @@ class LiveGameObserver extends AbstractDOMObserver {
     return { gameId: this._gameId, ...event };
   }
 
+  _movesListElement() {
+    const movesForPlayedGame = this._target.querySelector('.vertical-move-list');
+    const movesForObservedGame = this._target.querySelector('.vertical-move-list-component');
+    return movesForPlayedGame ? movesForPlayedGame : movesForObservedGame;
+  }
+
   initChildren() {
     const chatForPlayedGame = this._target.querySelector('.chat-scroll-area-component');
     const chatForObservedGame = this._target.querySelector('.chat-stream-component');
     const chatStreamElem = chatForPlayedGame ? chatForPlayedGame : chatForObservedGame;
-    const movesForPlayedGame = this._target.querySelector('.vertical-move-list');
-    const movesForObservedGame = this._target.querySelector('.vertical-move-list-component');
-    const movesListElem = movesForPlayedGame ? movesForPlayedGame : movesForObservedGame;
+    const movesListElem = this._movesListElement();
     const openingForPlayedGame = this._target.querySelector('.eco-opening-name');
     const openingForObservedGame = this._target.querySelector('.board-opening-name');
     const openingNameElem = openingForPlayedGame ? openingForPlayedGame : openingForObservedGame;
@@ -46,9 +50,11 @@ class LiveGameObserver extends AbstractDOMObserver {
       openingName: openingElementToName(openingNameElem),
     });
 
+    this._movesObserver = new MovesObserver(movesListElem);
+
     const children = [
       new ChatObserver(chatStreamElem, this._gameId),
-      new MovesObserver(movesListElem),
+      this._movesObserver,
       new OpeningObserver(openingNameElem),
       new TimeObserver(whiteTimeElem, 'white'),
       new TimeObserver(blackTimeElem, 'black'),
@@ -62,6 +68,7 @@ class LiveGameObserver extends AbstractDOMObserver {
     this._observer = new MutationObserver((mutations, obj) => {
       for (let mutation of mutations) {
         this._handleBoardNodeAdded(mutation);
+        this._handleMovesListChanged(mutation);
       }
     })
     .observe(this._target, {
@@ -96,6 +103,28 @@ class LiveGameObserver extends AbstractDOMObserver {
           }, 100);
         }
       }
+    }
+  }
+
+  _handleMovesListChanged(mutation) {
+    if (mutation.type === 'childList' && mutation.target.className === 'sidebar-component') {
+      const wasTabPanelPossiblyReplaced = Array.prototype.slice.call(mutation.addedNodes)
+        .filter(node => node.getAttribute('role') === 'tabpanel')
+        .length > 0;
+      const movesElement = this._movesListElement();
+      if (wasTabPanelPossiblyReplaced && movesElement) {
+        this._replaceMovesObserver(new MovesObserver(movesElement));
+      }
+    }
+  }
+
+  _replaceMovesObserver(newMovesObserver) {
+    this._movesObserver.stop();
+    const index = this._children.indexOf(this._movesObserver);
+    if (index !== -1) {
+      this._children.splice(index, newMovesObserver);
+      this._movesObserver = newMovesObserver;
+      this._movesObserver.start();
     }
   }
 }
