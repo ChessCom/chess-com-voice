@@ -17,7 +17,7 @@ const shortestStringCover = ({ target, choices }) => {
     }
     for (const part of choices) {
       if (target.startsWith(part)) {
-        q.push({ target: target.substr(part.length), parts: [...parts, part] });
+        q.push({ target: target.slice(part.length), parts: [...parts, part] });
       }
     }
   }

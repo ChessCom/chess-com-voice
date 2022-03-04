@@ -66,7 +66,7 @@ class LiveGameObserver extends AbstractDOMObserver {
             const node = mutation.addedNodes.item(i);
             if (node.id && node.id.startsWith('board-liveGame-')) {
               // looks like id of node is board-liveGame- followed by 0 followed by gameID, is this true?
-              const nodeGameId = node.id.substr('board-liveGame-'.length);
+              const nodeGameId = node.id.slice('board-liveGame-'.length);
 
               if (this._gameId === nodeGameId) {
                 break;
