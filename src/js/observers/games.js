@@ -50,11 +50,10 @@ class LiveGameObserver extends AbstractDOMObserver {
       openingName: openingElementToName(openingNameElem),
     });
 
-    this._movesObserver = new MovesObserver(movesListElem);
+    this._replaceMovesObserver(new MovesObserver(movesListElem));
 
     const children = [
       new ChatObserver(chatStreamElem, this._gameId),
-      this._movesObserver,
       new OpeningObserver(openingNameElem),
       new TimeObserver(whiteTimeElem, 'white'),
       new TimeObserver(blackTimeElem, 'black'),
