@@ -28,7 +28,6 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
-    - run: cd build && zip -r ../build.zip *
     - name: Compute short SHA
       run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
     - name: Archive production artifacts
@@ -36,4 +35,4 @@ jobs:
       with:
         name: build-${{ env.short_sha }}
         path: |
-          build.zip
+          build/**/*
