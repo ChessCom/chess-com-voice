@@ -22,9 +22,16 @@ class AudioSequence {
     } else {
       this.audio = new Audio();
       this.audio.addEventListener('canplaythrough', () => {
-        this.audio.addEventListener('ended', () => { this._playNext(); });
+        this.audio.addEventListener('ended', () => {
+          chrome.runtime.sendMessage({type: 'clearPromptInteraction'});
+          this._playNext();
+        });
         this.audio.volume = this.volume;
-        this.audio.play();
+        this.audio.play()
+          .catch(err => {
+            chrome.runtime.sendMessage({type: 'promptInteraction'});
+            this._playNext();
+          })
       });
       this.audio.addEventListener('error', () => { this._playNext(); });
       const path = this.paths.shift();
