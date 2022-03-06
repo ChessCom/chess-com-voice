@@ -25,7 +25,7 @@ class LiveGameObserver extends AbstractDOMObserver {
     return movesForPlayedGame ? movesForPlayedGame : movesForObservedGame;
   }
 
-  initChildren() {
+  initAndStartChildren() {
     const chatForPlayedGame = this._target.querySelector('.chat-scroll-area-component');
     const chatForObservedGame = this._target.querySelector('.chat-stream-component');
     const chatStreamElem = chatForPlayedGame ? chatForPlayedGame : chatForObservedGame;
@@ -97,8 +97,7 @@ class LiveGameObserver extends AbstractDOMObserver {
           setTimeout(() => {
             this.stopChildren();
             this.clearChildren();
-            this.initChildren();
-            this.startChildren();
+            this.initAndStartChildren();
           }, 100);
         }
       }
