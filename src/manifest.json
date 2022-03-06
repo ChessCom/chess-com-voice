@@ -10,7 +10,8 @@
     "default_icon": "icon-128.png"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "notifications"
   ],
   "icons": {
     "128": "icon-128.png"
