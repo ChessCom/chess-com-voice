@@ -36,6 +36,14 @@ class LiveGameObserver extends AbstractDOMObserver {
     const whiteTimeElem = this._target.querySelector('.clock-white');
     const blackTimeElem = this._target.querySelector('.clock-black');
 
+    if (!chatStreamElem || !movesListElem) {
+      setTimeout(() => {
+        LOG('not all elements ready, deferring')
+        this.initAndStartChildren();
+      }, 500);
+      return;
+    }
+
     const gameStateEvents = Array.from(chatStreamElem.children)
     .map(msg => chatGameMessageToEvent(msg))
     .filter(e => e);
