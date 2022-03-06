@@ -25,7 +25,7 @@ class LiveGameObserver extends AbstractDOMObserver {
     return movesForPlayedGame ? movesForPlayedGame : movesForObservedGame;
   }
 
-  initChildren() {
+  initAndStartChildren() {
     const chatForPlayedGame = this._target.querySelector('.chat-scroll-area-component');
     const chatForObservedGame = this._target.querySelector('.chat-stream-component');
     const chatStreamElem = chatForPlayedGame ? chatForPlayedGame : chatForObservedGame;
@@ -35,6 +35,14 @@ class LiveGameObserver extends AbstractDOMObserver {
     const openingNameElem = openingForPlayedGame ? openingForPlayedGame : openingForObservedGame;
     const whiteTimeElem = this._target.querySelector('.clock-white');
     const blackTimeElem = this._target.querySelector('.clock-black');
+
+    if (!chatStreamElem || !movesListElem) {
+      setTimeout(() => {
+        LOG('not all elements ready, deferring')
+        this.initAndStartChildren();
+      }, 500);
+      return;
+    }
 
     const gameStateEvents = Array.from(chatStreamElem.children)
     .map(msg => chatGameMessageToEvent(msg))
@@ -50,11 +58,10 @@ class LiveGameObserver extends AbstractDOMObserver {
       openingName: openingElementToName(openingNameElem),
     });
 
-    this._movesObserver = new MovesObserver(movesListElem);
+    this._replaceMovesObserver(new MovesObserver(movesListElem));
 
     const children = [
       new ChatObserver(chatStreamElem, this._gameId),
-      this._movesObserver,
       new OpeningObserver(openingNameElem),
       new TimeObserver(whiteTimeElem, 'white'),
       new TimeObserver(blackTimeElem, 'black'),
@@ -98,8 +105,7 @@ class LiveGameObserver extends AbstractDOMObserver {
           setTimeout(() => {
             this.stopChildren();
             this.clearChildren();
-            this.initChildren();
-            this.startChildren();
+            this.initAndStartChildren();
           }, 100);
         }
       }
