@@ -15,8 +15,8 @@ class OpeningObserver extends AbstractDOMObserver {
         type: 'openingName',
         name: openingName,
       });
-    })
-    .observe(this._target, {
+    });
+    this._observer.observe(this._target, {
       attributes: false,
       childList: true,
       subtree: false,

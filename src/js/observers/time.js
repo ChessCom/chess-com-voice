@@ -33,8 +33,8 @@ class TimeObserver extends AbstractDOMObserver {
           seconds,
         });
       }
-    })
-    .observe(this._target, {
+    });
+    this._observer.observe(this._target, {
       attributes: true,
       childList: true,
       subtree: false,
