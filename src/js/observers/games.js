@@ -70,8 +70,8 @@ class LiveGameObserver extends AbstractDOMObserver {
         this._handleBoardNodeAdded(mutation);
         this._handleMovesListChanged(mutation);
       }
-    })
-    .observe(this._target, {
+    });
+    this._observer.observe(this._target, {
       attributes: false,
       childList: true,
       subtree: true,

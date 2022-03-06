@@ -28,8 +28,8 @@ class MovesObserver extends AbstractDOMObserver {
           }
         }
       }
-    })
-    .observe(this._target, {
+    });
+    this._observer.observe(this._target, {
       attributes: false,
       childList: true,
       subtree: true,
