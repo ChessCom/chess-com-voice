@@ -24,7 +24,11 @@ chrome.runtime.onMessage.addListener(
             title: "Chess.com Voice Commentary",
             message: "Audio was blocked by the browser, please click anywhere in the page first. Read more: https://goo.gl/xX8pDD",
             iconUrl: "icon-128.png"
-          }, () => {});
+          }, () => {
+            chrome.notifications.onClicked.addListener(() => {
+              chrome.tabs.create({url: "https://goo.gl/xX8pDD"});
+            });
+          });
         }
       })
     } else if (request.type === 'clearPromptInteraction') {
