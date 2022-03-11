@@ -68,6 +68,8 @@ class LiveGameObserver extends AbstractDOMObserver {
       new PingObserver(this._pingFrequency),
     ];
     children.forEach(c => this.addChild(c));
+
+    this.startChildren();
   }
 
   start() {
