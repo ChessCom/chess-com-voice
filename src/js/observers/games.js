@@ -122,7 +122,9 @@ class LiveGameObserver extends AbstractDOMObserver {
         setTimeout(() => {
           const movesElement = this._movesListElement();
           if (movesElement) {
-            this._replaceMovesObserver(new MovesObserver(movesElement));
+            const movesObserver = new MovesObserver(movesElement);
+            this._replaceMovesObserver(movesObserver);
+            movesObserver.start();
           }
         }, 100);
       }
@@ -140,7 +142,6 @@ class LiveGameObserver extends AbstractDOMObserver {
 
     this._movesObserver = newMovesObserver;
     this.addChild(newMovesObserver);
-    this._movesObserver.start();
   }
 }
 
