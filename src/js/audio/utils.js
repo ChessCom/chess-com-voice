@@ -23,19 +23,28 @@ class AudioSequence {
       this.audio = new Audio();
       this.audio.addEventListener('canplaythrough', () => {
         this.audio.addEventListener('ended', () => {
-          chrome.runtime.sendMessage({type: 'clearPromptInteraction'});
-          this._playNext();
+          chrome.runtime.sendMessage({type: 'clearPromptInteraction'})
+            .catch((err) => {
+              console.log("Exception while sending message 'clearPromptInteraction'", err);
+            })
+            .then(() => {
+              this._playNext()
+            });
         });
         this.audio.volume = this.volume;
         this.audio.play()
           .catch(err => {
-            chrome.runtime.sendMessage({type: 'promptInteraction'});
-            this._playNext();
+            chrome.runtime.sendMessage({type: 'promptInteraction'})
+              .catch((err) => {
+                console.log("Exception while sending message 'promptInteraction'", err)
+              }).then(() => {
+                this._playNext();
+              })
           })
       });
       this.audio.addEventListener('error', () => { this._playNext(); });
       const path = this.paths.shift();
-      this.audio.src = chrome.extension.getURL(path);
+      this.audio.src = chrome.runtime.getURL(path);
     }
   }
   play() {

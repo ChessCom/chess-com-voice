@@ -34,5 +34,7 @@ chrome.runtime.onMessage.addListener(
     } else if (request.type === 'clearPromptInteraction') {
       chrome.notifications.clear("interact_first", () => {});
     }
+
+    sendResponse({});
   }
 );

@@ -22,12 +22,14 @@ var options = {
   mode: process.env.NODE_ENV || "development",
   entry: {
     popup: path.join(__dirname, "src", "js", "popup.js"),
-    options: path.join(__dirname, "src", "js", "options.js"),
     background: path.join(__dirname, "src", "js", "background.js"),
     contentScript: path.join(__dirname, "src", "js", "content-script.js")
   },
   chromeExtensionBoilerplate: {
-    notHotReload: ["contentScript"]
+    notHotReload: [
+      "background",
+      "contentScript"
+    ]
   },
   output: {
     path: path.join(__dirname, "build"),
@@ -83,11 +85,6 @@ var options = {
       chunks: ["popup"]
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, "src", "options.html"),
-      filename: "options.html",
-      chunks: ["options"]
-    }),
-    new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "background.html"),
       filename: "background.html",
       chunks: ["background"]
@@ -97,7 +94,7 @@ var options = {
 };
 
 if (env.NODE_ENV === "development") {
-  options.devtool = "cheap-module-eval-source-map";
+  options.devtool = "inline-cheap-source-map";
 }
 
 module.exports = options;
