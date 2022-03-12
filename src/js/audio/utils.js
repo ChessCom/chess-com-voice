@@ -35,7 +35,7 @@ class AudioSequence {
       });
       this.audio.addEventListener('error', () => { this._playNext(); });
       const path = this.paths.shift();
-      this.audio.src = chrome.extension.getURL(path);
+      this.audio.src = chrome.runtime.getURL(path);
     }
   }
   play() {
