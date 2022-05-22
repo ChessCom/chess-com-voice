@@ -1,5 +1,17 @@
 # Chess.com Voice Commentary
 
+Source code for the extension on [Chrome Web Store](https://chrome.google.com/webstore/detail/chesscom-voice-commentary/kampphbbbggcjlepmgfogpkpembcaphk/related?hl=en-US) to hear chess moves and annotation spoken as they are played on Chess.com.
+
+## Issues / Frequently Asked Questions
+
+### I don't hear any moves read
+
+Your browser may require you to interact with the page (such as a click) first before allowing audio playback. Hence, try clicking anywhere on the page, like an empty space. See ["Autoplay policy in Chrome", Chrome.com](https://goo.gl/xX8pDD) for more.
+
+### I still have an issue
+
+Open an issue [here](https://github.com/ChessCom/chess-com-voice/issues/).
+
 ## Development
 
 To run the extension locally,
