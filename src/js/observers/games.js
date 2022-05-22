@@ -8,6 +8,11 @@ import { OpeningObserver, openingElementToName } from './opening';
 import { TimeObserver } from './time';
 import { PingObserver } from './ping';
 
+function extractGameIdFromUrl(url) {
+  const parts = url.split('/');
+  return parts[parts.length - 1];
+}
+
 class LiveGameObserver extends AbstractDOMObserver {
   constructor(target, pingFrequency) {
     super(target);
@@ -89,28 +94,23 @@ class LiveGameObserver extends AbstractDOMObserver {
   }
 
   _handleBoardNodeAdded(mutation) {
-    if (mutation.type === 'childList' && mutation.target.id === 'board-layout-chessboard') {
-      for (let i = 0; i < mutation.addedNodes.length; ++i) {
-        const node = mutation.addedNodes.item(i);
-        if (node.id && node.id.startsWith('board-liveGame-')) {
-          // looks like id of node is board-liveGame- followed by 0 followed by gameID, is this true?
-          const nodeGameId = node.id.slice('board-liveGame-'.length);
+    if (mutation.type === 'childList' && mutation.target.dataset && mutation.target.dataset.cy === 'clock-time') {
+      const url = window.location.href;
+      const gameId = extractGameIdFromUrl(url);
 
-          if (this._gameId === nodeGameId) {
-            break;
-          }
-
-          this._gameId = nodeGameId;
-
-          // we set timeout so that initial moves list and opening name have time to load
-          // maybe this should be done in a better way?
-          setTimeout(() => {
-            this.stopChildren();
-            this.clearChildren();
-            this.initAndStartChildren();
-          }, 100);
-        }
+      if (this._gameId === gameId) {
+        return;
       }
+
+      this._gameId = gameId;
+
+      // we set timeout so that initial moves list and opening name have time to load
+      // maybe this should be done in a better way?
+      setTimeout(() => {
+        this.stopChildren();
+        this.clearChildren();
+        this.initAndStartChildren();
+      }, 100);
     }
   }
 
